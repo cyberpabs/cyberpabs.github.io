@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My portfolio</title>
+    <!-- Marked.js for client-side Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        /* Regular Weight (Body text) */
+        @font-face {
+            font-family: 'IBM Plex Mono';
+            font-style: normal;
+            font-display: swap;
+            font-weight: 400;
+            src: url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-mono@5.2.7/latin-400-normal.woff2) format('woff2');
+        }
+
+        /* Semi-Bold Weight (Headings and bolded elements) */
+        @font-face {
+            font-family: 'IBM Plex Mono';
+            font-style: normal;
+            font-display: swap;
+            font-weight: 600;
+            src: url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-mono@5.2.7/latin-600-normal.woff2) format('woff2');
+        }
+
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 400;
+            text-align: center;
+            margin: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr 3fr 1fr 1fr;
+            grid-gap: 20px;
+            align-items: start;
+            justify-items: center;
+            align-content: center;
+        }
+
+        h1,
+        h4 {
+            font-weight: 600;
+        }
+
+        b,
+        strong {
+            font-weight: 600;
+        }
+
+        #navbar {
+            grid-column: 1 / -1;
+            margin-top: 5%;
+            text-align: center;
+        }
+
+        a,
+        .obs_lk {
+            color: green;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        a:hover,
+        .obs_lk:hover {
+            color: white;
+            text-decoration: none;
+        }
+
+        /* CSS Reverse Trick: Confuses standard text harvesters */
+        .obs_lk {
+
+
+            display: inline-block;
+        }
+
+        h1 {
+            font-size: 24px;
+            grid-column: 3;
+            text-align: center;
+        }
+
+        h4 {
+            grid-column: 3;
+            text-align: center;
+        }
+
+        #content {
+            margin-top: 10%;
+            grid-column: 3;
+            text-align: left;
+            line-height: 1.6;
+            width: 100%;
+            max-width: 650px;
+        }
+
+        #vintage-image {
+            margin-top: 20px;
+            grid-column: 3;
+            text-align: center;
+        }
+
+        #vintage-image img {
+            width: 60%;
+            opacity: 60%;
+        }
+
+        /* Blog specific styling */
+        .blog-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .blog-item {
+            margin-bottom: 20px;
+            border-bottom: 1px dashed #333;
+            padding-bottom: 15px;
+        }
+
+        .blog-date {
+            color: #888;
+            font-size: 0.85em;
+            margin-right: 15px;
+        }
+
+        .blog-title {
+            font-weight: bold;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        /* Media Query for smaller screens */
+        @media only screen and (max-width: 600px) {
+            h1 {
+                font-size: 30px;
+            }
+
+            #content {
+                margin-top: 10%;
+                grid-column: 2 / 5;
+                text-align: left;
+            }
+
+            #navbar {
+                margin-top: 40px;
+            }
+
+            #vintage-image {
+                position: fixed;
+                bottom: 13%;
+                left: 0;
+                right: 0;
+                margin: 0 auto;
+                z-index: 0;
+            }
+
+            #vintage-image img {
+                width: 60%;
+                opacity: 70%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="navbar">
+        <a href="?page=home">home</a> /
+        <a href="?page=blog">blog</a> /
+        <a href="https://www.goodreads.com/cyberpabs">books</a> /
+        <span class="obs_lk"
+            data-handle="9Ur66M6gyeIJJt5Eiupqx1t_yWs5F-rYydF-RBNtQenamavXMLLGB0vpCwDj76LW/ue#/em.langis"
+            onclick="handleSecureRedirect(this)">signal</span>
+    </div>
+
+    <div id="content">
+        <!-- Dynamic content injection -->
+    </div>
+
+    <div id="vintage-image">
+        <img src="./media/sumi_s.png" alt="Sumi Sakurasawa" />
+    </div>
+
+    <script>
+        function handleSecureRedirect(element) {
+            const rawHandle = element.getAttribute("data-handle");
+            const reversedLink = rawHandle.split("").reverse().join("");
+            window.open("https://" + reversedLink, "_blank", "noopener,noreferrer");
+        }
+
+        // --- BLOG POST CONFIGURATION & ROUTER ---
+        const blogPosts = [
+            {
+                title: "Default Post",
+                date: "2026-07-15",
+                file: "posts/2026-07-15-default-post.md"
+            }
+        ];
+
+        const homeHTML = `
+        <h1>Welcome</h1>
+        <h4>My name is <a href="https://github.com/cyberpabs">pablo</a>.</h4>
+        <p>
+          I have a background in <strong>Software Engineering</strong> and <strong>Data Science</strong>. 
+          My focus lies in applying this knowledge to digital investigations and open-source intelligence (OSINT).
+          <br /><br />
+          When I'm offline, I'm usually swimming, lifting weights, reading, or keeping up with anime.
+          <br /><br />
+          Let's chat :)
+        </p>
+      `;
+
+        function router() {
+            const params = new URLSearchParams(window.location.search);
+            const page = params.get('page') || 'home';
+            const postIndex = params.get('post');
+            const contentDiv = document.getElementById('content');
+            const imageDiv = document.getElementById('vintage-image');
+
+            imageDiv.style.display = (page === 'home') ? 'block' : 'none';
+
+            if (postIndex !== null) {
+                const post = blogPosts[postIndex];
+                if (post) {
+                    contentDiv.innerHTML = `<span class="back-btn" onclick="navigateTo('blog')">← Back to Blog</span><br><h1>${post.title}</h1><p class="blog-date">${post.date}</p><div id="post-body">Loading...</div>`;
+
+                    fetch(post.file)
+                        .then(response => {
+                            if (!response.ok) throw new Error("File not found");
+                            return response.text();
+                        })
+                        .then(text => {
+                            document.getElementById('post-body').innerHTML = marked.parse(text);
+                        })
+                        .catch(err => {
+                            document.getElementById('post-body').innerHTML = `<p style="color: red;">Error loading post: ${err.message}</p>`;
+                        });
+                } else {
+                    contentDiv.innerHTML = `<h1>404</h1><p>Post not found.</p>`;
+                }
+            } else if (page === 'blog') {
+                const sortedPosts = [...blogPosts].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                let blogListHTML = '<h1>Posts</h1><ul class="blog-list">';
+                sortedPosts.forEach((post) => {
+                    const originalIndex = blogPosts.findIndex(p => p.file === post.file);
+                    blogListHTML += `
+              <li class="blog-item">
+                <span class="blog-date">${post.date}</span>
+                <a href="?page=blog&post=${originalIndex}" class="blog-title" onclick="event.preventDefault(); navigateTo('blog', ${originalIndex})">${post.title}</a>
+              </li>
+            `;
+                });
+                blogListHTML += '</ul>';
+                contentDiv.innerHTML = blogListHTML;
+            } else {
+                contentDiv.innerHTML = homeHTML;
+            }
+        }
+
+        function navigateTo(page, postIndex = null) {
+            let url = `?page=${page}`;
+            if (postIndex !== null) {
+                url += `&post=${postIndex}`;
+            }
+            window.history.pushState({}, '', url);
+            router();
+        }
+
+        document.querySelectorAll('#navbar a').forEach(link => {
+            const href = link.getAttribute('href');
+            if (href && href.startsWith('?')) {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const params = new URLSearchParams(href);
+                    navigateTo(params.get('page'));
+                });
+            }
+        });
+
+        window.addEventListener('popstate', router);
+        window.addEventListener('DOMContentLoaded', router);
+    </script>
+</body>
+
+</html>
